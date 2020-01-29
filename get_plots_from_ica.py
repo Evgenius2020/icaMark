@@ -10,6 +10,8 @@ import matplotlib
 matplotlib.rcParams.update({'figure.max_open_warning': 0})
 #matplotlib.use('Agg') 
 
+from PIL import Image 
+
 def create_mne_raw_object(filename):
     data = pd.read_csv(filename)
     ch_names = list(data.columns[1:])
@@ -30,7 +32,7 @@ def create_mne_raw_object(filename):
     
     return RawArray(data, info, verbose=False)
 
-def get_plots_from_ica( csv_path="../", csv_filename="subj1_series1_data.csv", png_path="../plots/"):
+def get_plots_from_ica( csv_path="../", csv_filename="subj1_series1_data.csv", png_path="../plots/", ica_path="../icas/"):
     csv_filename_ = csv_path+csv_filename
     raw = create_mne_raw_object(csv_filename_)
     data = pd.read_csv(csv_filename_)
@@ -42,10 +44,23 @@ def get_plots_from_ica( csv_path="../", csv_filename="subj1_series1_data.csv", p
     
     png_str = csv_filename[:-8]
 
-#    print(png_str)
+
+
     for i in range(0, my_n):
         plot_to_save = ica.plot_components(i, show=False)
         plot_to_save.savefig(png_path+png_str+("ica_%d.png"%i))
+        
+        # cropping images
+        plot_to_save = Image.open(png_path+png_str+("ica_%d.png"%i))
+        width, height = plot_to_save.size 
+        left = 25
+        top = 56
+        right = 205
+        bottom = 232
+        plot_to_save = plot_to_save.crop((left, top, right, bottom)) 
+        plot_to_save.save(png_path+png_str+("ica_%d.png"%i))
+        
+    ica.save(ica_path+png_str+"-ica.fif")
 
     return
 
