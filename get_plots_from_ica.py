@@ -41,10 +41,11 @@ def get_plots_from_ica( csv_path="../", csv_filename="subj1_series1_data.csv", p
     ica.fit(raw)
     
     png_str = csv_filename[:-8]
-    
+
+#    print(png_str)
     for i in range(0, my_n):
         plot_to_save = ica.plot_components(i, show=False)
-        plot_to_save.savefig(png_path+csv_filename+("ica_%d.png"%i))
+        plot_to_save.savefig(png_path+png_str+("ica_%d.png"%i))
 
     return
 
