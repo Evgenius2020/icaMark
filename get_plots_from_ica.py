@@ -69,13 +69,13 @@ def get_plots_from_ica(csv_path="csv/", filename="subj1_series1", png_path="plot
 
     for i in range(ch_number):
         plot_to_save = ica.plot_components(i, show=False)
-    png_filename = png_path + filename + ("_ica_%d.png" % i)
-    plot_to_save.savefig(png_filename)
+        png_filename = png_path + filename + ("_ica_%d.png" % i)
+        plot_to_save.savefig(png_filename)
 
-    # cropping images
-    plot_to_save = Image.open(png_filename)
-    plot_to_save = plot_to_save.crop((25, 56, 205, 232))
-    plot_to_save.save(png_filename)
+        # cropping images
+        plot_to_save = Image.open(png_filename)
+        plot_to_save = plot_to_save.crop((25, 56, 205, 232))
+        plot_to_save.save(png_filename)
 
     weights_map = get_ica_weights_map(ica)
     np.savetxt(ica_path + filename + "_weights.csv", weights_map)
