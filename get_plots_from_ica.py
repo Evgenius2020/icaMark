@@ -78,7 +78,7 @@ def get_plots_from_ica(csv_path="csv/", filename="subj1_series1", png_path="plot
         plot_to_save.save(png_filename)
 
     weights_map = get_ica_weights_map(ica)
-    np.savetxt(ica_path + filename + "_weights.csv", weights_map)
+    np.savetxt(ica_path + filename + "_weights.csv", weights_map, delimiter=', ')
     ica.save(ica_path + filename + "_ica.fif")
 
 

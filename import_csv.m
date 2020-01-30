@@ -1,6 +1,7 @@
-function eeg = import_csv(filename)
-    data = csvread(filename, 1, 1).';
-    eeg = pop_importdata('data', data, 'nbchan', 32, 'srate', 512);
+function EEG = import_csv(datafname, locsfname, weightsfname)
+    data = csvread(datafname, 1, 1).';
+    EEG = pop_importdata('data', data, 'nbchan', 32, 'srate', 512);
+    EEG.chanlocs = readlocs(locsfname, 'importmode', 'eeglab', 'filetype', 'sfp');
+    EEG.icawinv = csvread(weightsfname).';
+    pop_selectcomps(EEG, 1:31);
 end
-
-%eegplot(eeg.data)
