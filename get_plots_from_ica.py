@@ -40,10 +40,9 @@ def mkdirp(directory):
 
 
 def get_ica_weights_map(ica):
-    fast_dot = np.dot
     components = list(range(ica.n_components_))
-    maps = fast_dot(ica.mixing_matrix_[:, components].T,
-                    ica.pca_components_[:ica.n_components_])
+    maps = np.dot(ica.mixing_matrix_[:, components].T,
+                  ica.pca_components_[:ica.n_components_])
     return maps
 
 
@@ -69,7 +68,7 @@ def get_plots_from_ica(csv_path="csv/", filename="subj1_series1", png_path="plot
 
     for i in range(ch_number):
         plot_to_save = ica.plot_components(i, show=False)
-        png_filename = png_path + filename + ("_ica_%d.png" % (i+1))
+        png_filename = png_path + filename + ("_ica_%d.png" % (i + 1))
         plot_to_save.savefig(png_filename)
 
         # cropping images
