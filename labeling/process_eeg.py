@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import pandas as pd
 import mne
@@ -6,16 +5,16 @@ from mne import create_info
 from mne.channels import read_montage
 from mne.io import RawArray
 import csv
-
 from PIL import Image
 
 import matplotlib
+import matplotlib.pyplot as plt
 
+plt.ioff()
 matplotlib.rcParams.update({'figure.max_open_warning': 0})
-matplotlib.use('Agg')
 
 
-def load_csv(filename):
+def load_raw_eeg(filename):
     data = pd.read_csv(filename)
     ch_names = list(data.columns[1:])
 
@@ -34,11 +33,6 @@ def load_csv(filename):
     return RawArray(data, info, verbose=False), ch_locations
 
 
-def mkdirp(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-
 def get_ica_weights_map(ica):
     components = list(range(ica.n_components_))
     maps = np.dot(ica.mixing_matrix_[:, components].T,
@@ -53,32 +47,34 @@ def writecsv(data, filename):
             writer.writerow(data_row)
 
 
-def get_plots_from_ica(csv_path="csv/", filename="subj1_series1", png_path="plots/",
-                       ica_path="icas/"):
-    raw, ch_locations = load_csv(csv_path + filename + "_data.csv")
-    writecsv(ch_locations, csv_path + filename + "_locations.csv")
+def process_eeg(source_dir, out_dir, plots_dir, subj_name):
+    data_filename = source_dir + subj_name + "_data.csv"
+    locations_filename = out_dir + subj_name + "_locations.csv"
+    ica_weights_filename = out_dir + subj_name + "_ica_weights.csv"
+    plot_filenames = []
+
+    raw, ch_locations = load_raw_eeg(data_filename)
+    writecsv(ch_locations, locations_filename)
 
     ch_number = len(raw.ch_names)
 
-    mkdirp(png_path)
-    mkdirp(ica_path)
-
-    ica = mne.preprocessing.ICA(n_components=ch_number, random_state=97, max_iter=800)
+    ica = mne.preprocessing.ICA(n_components=ch_number)
     ica.fit(raw)
 
     for i in range(ch_number):
         plot_to_save = ica.plot_components(i, show=False)
-        png_filename = png_path + filename + ("_ica_%d.png" % (i + 1))
-        plot_to_save.savefig(png_filename)
+        plot_filename = out_dir + plots_dir + subj_name + ("_%d.png" % (i + 1))
+        plot_filenames.append(plot_filename)
+        plot_to_save.savefig(plot_filename)
 
         # cropping images
-        plot_to_save = Image.open(png_filename)
+        plot_to_save = Image.open(plot_filename)
         plot_to_save = plot_to_save.crop((25, 56, 205, 232))
-        plot_to_save.save(png_filename)
+        plot_to_save.save(plot_filename)
 
     weights_map = get_ica_weights_map(ica)
-    np.savetxt(ica_path + filename + "_weights.csv", weights_map, delimiter=', ')
-    ica.save(ica_path + filename + "_ica.fif")
+    np.savetxt(ica_weights_filename, weights_map, delimiter=', ')
 
+    plt.close('all')
 
-get_plots_from_ica()
+    return data_filename, locations_filename, ica_weights_filename, plot_filenames
