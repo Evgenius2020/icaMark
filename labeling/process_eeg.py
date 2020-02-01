@@ -47,12 +47,7 @@ def writecsv(data, filename):
             writer.writerow(data_row)
 
 
-def process_eeg(source_dir, out_dir, plots_dir, subj_name):
-    data_filename = source_dir + subj_name + "_data.csv"
-    locations_filename = out_dir + subj_name + "_locations.csv"
-    ica_weights_filename = out_dir + subj_name + "_ica_weights.csv"
-    plot_filenames = []
-
+def process_eeg(data_filename, locations_filename, ica_weights_filename, plot_filenames):
     raw, ch_locations = load_raw_eeg(data_filename)
     writecsv(ch_locations, locations_filename)
 
@@ -63,7 +58,7 @@ def process_eeg(source_dir, out_dir, plots_dir, subj_name):
 
     for i in range(ch_number):
         plot_to_save = ica.plot_components(i, show=False)
-        plot_filename = out_dir + plots_dir + subj_name + ("_%d.png" % (i + 1))
+        plot_filename = plot_filenames[i]
         plot_filenames.append(plot_filename)
         plot_to_save.savefig(plot_filename)
 
@@ -76,5 +71,3 @@ def process_eeg(source_dir, out_dir, plots_dir, subj_name):
     np.savetxt(ica_weights_filename, weights_map, delimiter=', ')
 
     plt.close('all')
-
-    return data_filename, locations_filename, ica_weights_filename, plot_filenames
