@@ -1,4 +1,4 @@
-function labels = label_components(datafname, locsfname, weightsfname)
+function labels = label_components(datafname, locsfname, weightsfname, labelsfname)
     data = csvread(datafname, 1, 1).';
     EEG = pop_importdata('data', data, 'nbchan', 32, 'srate', 512);
     EEG.chanlocs = readlocs(locsfname, 'importmode', 'eeglab', 'filetype', 'sfp');
@@ -19,4 +19,6 @@ function labels = label_components(datafname, locsfname, weightsfname)
           labels(i) = 1;
         end
     end
+
+    csvwrite(labelsfname, labels);
 end
