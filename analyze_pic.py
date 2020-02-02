@@ -10,7 +10,7 @@ from keras.preprocessing.image import img_to_array, load_img
 
 
 
-def analyze_pic(filename = "../icaMark/plots/subj1_series1_6.png"):
+def analyze_pic(filename):
     #the definition of cnn parameters    
     cnn = Sequential()
     cnn.add(Conv2D(filters=32, 
