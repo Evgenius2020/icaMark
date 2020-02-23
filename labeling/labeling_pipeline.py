@@ -27,7 +27,7 @@ mkdirp(plots_dir)
 mkdirp(temp_dir)
 
 subj_files = []
-csv_files = [f for f in listdir("./csv/") if isfile(join("./csv/", f))]
+csv_files = [f for f in listdir(source_dir) if isfile(join(source_dir, f))]
 for csv_file in csv_files:
     subj_name = csv_file.replace("_data.csv", "")
     data_filename = source_dir + subj_name + "_data.csv"
@@ -36,14 +36,16 @@ for csv_file in csv_files:
     plot_filenames = [plots_dir + subj_name + ("_%d.png" % (i + 1)) for i in range(32)]
     labels_filename = temp_dir + subj_name + "_labels.csv"
 
-    # create channels locations, get ica weights and scalp plots
-    process_eeg(data_filename, locations_filename, ica_weights_filename, plot_filenames)
+    if not os.path.isfile(labels_filename):
+        print(labels_filename)
+        # create channels locations, get ica weights and scalp plots
+        process_eeg(data_filename, locations_filename, ica_weights_filename, plot_filenames)
 
-    # run matlab labeling script, async
-    os.system(
-        "matlab /minimize /nosplash /nodesktop /r \"addpath('%EEGLAB_DIR%');eeglab;"
-        "label_components('{0}','{1}','{2}','{3}');exit;\"".format(
-            data_filename, locations_filename, ica_weights_filename, labels_filename))
+        # run matlab labeling script, async
+        os.system(
+            "matlab /minimize /nosplash /nodesktop /r \"addpath('%EEGLAB_DIR%');eeglab;"
+            "label_components('{0}','{1}','{2}','{3}');exit;\"".format(
+                data_filename, locations_filename, ica_weights_filename, labels_filename))
 
     subj_files.append([labels_filename] + plot_filenames)
 

@@ -23,13 +23,16 @@ def ic_auto_exclude(ica, verbose=False):
         plot_to_save = plot_to_save.crop((25, 56, 205, 232))
         plot_to_save.save(plot_filename)
 
-        img = open(plot_filename, 'rb')
-        files = {'plot': (plot_filename, img, 'image/png')}
-        resp = requests.post('http://icamark.herokuapp.com/label', files=files).text
-        label = json.loads(resp)['label']
+        with open(plot_filename, 'rb') as img:
+            files = {'plot': (plot_filename, img, 'image/png')}
+            resp = requests.post('http://icamark.herokuapp.com/label', files=files).text
+            label = json.loads(resp)['label']
+
         if label == 0:
             ic_to_reject.append(i)
+
         os.remove(plot_filename)
+
         if verbose:
             print("ICA#{} ({})".format(i, label))
     return ic_to_reject

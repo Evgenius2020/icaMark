@@ -6,6 +6,8 @@ function labels = label_components(datafname, locsfname, weightsfname, labelsfna
     EEG.icachansind = 1:32;
     EEG.icawinv = csvread(weightsfname).';
     
+    % pop_selectcomps(EEG);
+    
     % needs to be
     EEG.icaweights = eye(32);
     EEG.icasphere = eye(32);
@@ -20,5 +22,6 @@ function labels = label_components(datafname, locsfname, weightsfname, labelsfna
         end
     end
 
+    csvwrite(strrep(labelsfname, '.csv', '_all.csv'), EEG.etc.ic_classification.ICLabel.classifications);
     csvwrite(labelsfname, labels);
 end
